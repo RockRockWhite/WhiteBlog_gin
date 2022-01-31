@@ -1,0 +1,11 @@
+AppDebug: true   # 调试模式
+
+HttpServer:
+  Port: ":8080" # 网站运行端口号
+
+DataBase:
+  Host: "127.0.0.1"
+  Port: "3306"
+  Username: "root"
+  Password: "white"
+  DBName: "white_blog"
