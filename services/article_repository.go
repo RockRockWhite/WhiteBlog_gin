@@ -50,48 +50,52 @@ func NewArticleRepository(autoMigrate bool) *ArticleRepository {
 }
 
 // GetArticle  从id获得博文
-func (repository *ArticleRepository) GetArticle(id uint) (*entities.Article, error) {
+func (repository *ArticleRepository) GetArticle(id uint) *entities.Article {
 	if !repository.ArticleExists(id) {
 		panic(fmt.Errorf("article id %v not exists", id))
 	}
 	var article entities.Article
-	result := repository.db.First(&article, id)
+	if result := repository.db.First(&article, id); result.Error != nil {
+		panic(fmt.Errorf("failed to get article id %v : %s", id, result.Error))
+	}
 
 	// 获得子成员
-	article.Stars, _ = repository.GetStars(id)
-	article.Tags, _ = repository.GetTags(id)
-	article.Comments, _ = repository.GetComments(id)
+	article.Stars = repository.GetStars(id)
+	article.Tags = repository.GetTags(id)
+	article.Comments = repository.GetComments(id)
 
-	return &article, result.Error
+	return &article
 }
 
-func (repository *ArticleRepository) GetArticles() ([]entities.Article, error) {
+func (repository *ArticleRepository) GetArticles() []entities.Article {
 	var articles []entities.Article
-	result := repository.db.Find(&articles)
+	if result := repository.db.Find(&articles); result.Error != nil {
+		panic(fmt.Errorf("failed to get articles: %s", result.Error))
+	}
 
 	// 获得各个子成员
 	for i, _ := range articles {
-		articles[i].Stars, _ = repository.GetStars(articles[i].ID)
-		articles[i].Tags, _ = repository.GetTags(articles[i].ID)
-		articles[i].Comments, _ = repository.GetComments(articles[i].ID)
+		articles[i].Stars = repository.GetStars(articles[i].ID)
+		articles[i].Tags = repository.GetTags(articles[i].ID)
+		articles[i].Comments = repository.GetComments(articles[i].ID)
 	}
 
-	return articles, result.Error
+	return articles
 }
 
 // AddArticle 创建博文
-func (repository *ArticleRepository) AddArticle(article *entities.Article) (uint, error) {
-	result := repository.db.Create(article)
+func (repository *ArticleRepository) AddArticle(article *entities.Article) uint {
+	if result := repository.db.Create(article); result.Error != nil {
+		panic(fmt.Errorf("failed to add article %+v : %s", article, result.Error))
+	}
 
 	// 添加Tags
 	for i, _ := range article.Tags {
 		article.Tags[i].ArticleId = article.ID
-		if _, err := repository.AddTag(&article.Tags[i]); err != nil {
-			panic(fmt.Errorf("fatal add tag %+v : %s", article.Tags[i], err))
-		}
+		repository.AddTag(&article.Tags[i])
 	}
 
-	return article.ID, result.Error
+	return article.ID
 }
 
 // UpdateArticle 更新博文
@@ -137,15 +141,17 @@ func (repository *ArticleRepository) GetStar(id uint) (*entities.Star, error) {
 }
 
 // GetStars 获得博文的所有点赞
-func (repository *ArticleRepository) GetStars(articleId uint) ([]entities.Star, error) {
+func (repository *ArticleRepository) GetStars(articleId uint) []entities.Star {
 	if !repository.ArticleExists(articleId) {
 		panic(fmt.Errorf("article id %v not exists", articleId))
 	}
 
 	var stars []entities.Star
-	result := repository.db.Where(&entities.Star{ArticleId: articleId}).Find(&stars)
+	if result := repository.db.Where(&entities.Star{ArticleId: articleId}).Find(&stars); result.Error != nil {
+		panic(fmt.Errorf("failed to get stars articleId %v : %s", articleId, result.Error))
+	}
 
-	return stars, result.Error
+	return stars
 }
 
 // AddStar 添加一条点赞记录
@@ -203,26 +209,30 @@ func (repository *ArticleRepository) GetTag(id uint) (*entities.Tag, error) {
 }
 
 // GetTags 获得博客的所有Tag
-func (repository *ArticleRepository) GetTags(articleId uint) ([]entities.Tag, error) {
+func (repository *ArticleRepository) GetTags(articleId uint) []entities.Tag {
 	if !repository.ArticleExists(articleId) {
 		panic(fmt.Errorf("article id %v not exists", articleId))
 	}
 
 	var tags []entities.Tag
-	result := repository.db.Where(&entities.Tag{ArticleId: articleId}).Find(&tags)
+	if result := repository.db.Where(&entities.Tag{ArticleId: articleId}).Find(&tags); result.Error != nil {
+		panic(fmt.Errorf("failed to get tags articleId %v : %s", articleId, result.Error))
+	}
 
-	return tags, result.Error
+	return tags
 }
 
 // AddTag 增加一条Tag
-func (repository *ArticleRepository) AddTag(tag *entities.Tag) (uint, error) {
+func (repository *ArticleRepository) AddTag(tag *entities.Tag) uint {
 	if !repository.ArticleExists(tag.ArticleId) {
 		panic(fmt.Errorf("article id %v not exists", tag.ArticleId))
 	}
 
-	result := repository.db.Create(tag)
+	if result := repository.db.Create(tag); result.Error != nil {
+		panic(fmt.Errorf("failed to add tag %+v : %s", tag, result.Error))
+	}
 
-	return tag.ID, result.Error
+	return tag.ID
 }
 
 // UpdateTag 更新Tag
@@ -269,15 +279,17 @@ func (repository *ArticleRepository) GetComment(id uint) (*entities.Comment, err
 }
 
 // GetComments 获得评论
-func (repository *ArticleRepository) GetComments(articleId uint) ([]entities.Comment, error) {
+func (repository *ArticleRepository) GetComments(articleId uint) []entities.Comment {
 	if !repository.ArticleExists(articleId) {
 		panic(fmt.Errorf("article id %v not exists", articleId))
 	}
 
 	var articles []entities.Comment
-	result := repository.db.Where(&entities.Comment{ArticleId: articleId}).Find(&articles)
+	if result := repository.db.Where(&entities.Comment{ArticleId: articleId}).Find(&articles); result.Error != nil {
+		panic(fmt.Errorf("failed to get comments articleId %v : %s", articleId, result.Error))
+	}
 
-	return articles, result.Error
+	return articles
 }
 
 // AddComment 添加一条评论

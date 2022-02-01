@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"fmt"
 	"gin/Dtos"
 	"gin/services"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"net/http"
 	"strconv"
 )
@@ -17,13 +19,18 @@ func InitArticleController() {
 
 func AddArticle(c *gin.Context) {
 	var articleDto Dtos.ArticleAddDto
-	if err := c.BindJSON(&articleDto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	if err := c.ShouldBind(&articleDto); err != nil {
+		c.JSON(http.StatusBadRequest, Dtos.ErrorDto{
+			Message:          "Bind Model Error",
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
+		return
 	}
+
 	entity := articleDto.ToEntity(1)
-	if _, err := repository.AddArticle(entity); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	}
+	repository.AddArticle(entity)
+
 	c.JSON(http.StatusCreated, Dtos.ParseArticleEntity(entity))
 }
 
@@ -32,17 +39,20 @@ func GetArticle(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 
 	if !repository.ArticleExists(uint(id)) {
-		c.Status(http.StatusNotFound)
+		c.JSON(http.StatusNotFound, Dtos.ErrorDto{
+			Message:          fmt.Sprintf("Article %v not found!", id),
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
 		return
 	}
 
-	article, _ := repository.GetArticle(uint(id))
+	article := repository.GetArticle(uint(id))
 	// 转换为Dto
 	c.JSON(http.StatusOK, Dtos.ParseArticleEntity(article))
 }
 
 func GetArticles(c *gin.Context) {
-	articles, _ := repository.GetArticles()
+	articles := repository.GetArticles()
 
 	// 转换为Dto
 	articleDtos := make([]Dtos.ArticleGetDto, len(articles))

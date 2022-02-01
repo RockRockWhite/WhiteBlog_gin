@@ -9,3 +9,6 @@ DataBase:
   Username: "root"
   Password: "white"
   DBName: "white_blog"
+
+Document:
+  Url: "https://github.com/RockRockWhite/WebApi"
