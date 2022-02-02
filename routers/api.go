@@ -17,8 +17,8 @@ func InitApiRouter() *gin.Engine {
 		blog.GET("/", controllers.GetArticles)
 		blog.POST("/", controllers.AddArticle)
 		blog.PUT("/", controllers.UpdateArticle)
-		blog.PATCH("/", controllers.UpdateArticle)
-		blog.DELETE("/", controllers.DeleteArticle)
+		blog.PATCH("/:id", controllers.UpdateArticle)
+		blog.DELETE("/:id", controllers.DeleteArticle)
 	}
 	return router
 }

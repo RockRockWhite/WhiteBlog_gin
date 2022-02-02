@@ -2,8 +2,9 @@ package controllers
 
 import (
 	"fmt"
-	"gin/Dtos"
+	"gin/dtos"
 	"gin/services"
+	"gin/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"net/http"
@@ -18,10 +19,10 @@ func InitArticleController() {
 }
 
 func AddArticle(c *gin.Context) {
-	var articleDto Dtos.ArticleAddDto
+	var articleDto dtos.ArticleAddDto
 
 	if err := c.ShouldBind(&articleDto); err != nil {
-		c.JSON(http.StatusBadRequest, Dtos.ErrorDto{
+		c.JSON(http.StatusBadRequest, dtos.ErrorDto{
 			Message:          "Bind Model Error",
 			DocumentationUrl: viper.GetString("Document.Url"),
 		})
@@ -31,7 +32,7 @@ func AddArticle(c *gin.Context) {
 	entity := articleDto.ToEntity(1)
 	repository.AddArticle(entity)
 
-	c.JSON(http.StatusCreated, Dtos.ParseArticleEntity(entity))
+	c.JSON(http.StatusCreated, dtos.ParseArticleEntity(entity))
 }
 
 // GetArticle 添加博文
@@ -39,7 +40,7 @@ func GetArticle(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 
 	if !repository.ArticleExists(uint(id)) {
-		c.JSON(http.StatusNotFound, Dtos.ErrorDto{
+		c.JSON(http.StatusNotFound, dtos.ErrorDto{
 			Message:          fmt.Sprintf("Article %v not found!", id),
 			DocumentationUrl: viper.GetString("Document.Url"),
 		})
@@ -48,26 +49,59 @@ func GetArticle(c *gin.Context) {
 
 	article := repository.GetArticle(uint(id))
 	// 转换为Dto
-	c.JSON(http.StatusOK, Dtos.ParseArticleEntity(article))
+	c.JSON(http.StatusOK, dtos.ParseArticleEntity(article))
 }
 
 func GetArticles(c *gin.Context) {
 	articles := repository.GetArticles()
 
 	// 转换为Dto
-	articleDtos := make([]Dtos.ArticleGetDto, len(articles))
+	articleDtos := make([]dtos.ArticleGetDto, len(articles))
 	for _, article := range articles {
-		articleDtos = append(articleDtos, *Dtos.ParseArticleEntity(&article))
+		articleDtos = append(articleDtos, *dtos.ParseArticleEntity(&article))
 	}
 
 	c.JSON(http.StatusOK, articles)
 }
 
 func UpdateArticle(c *gin.Context) {
+	// 获得更新id
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	if !repository.ArticleExists(uint(id)) {
+		c.JSON(http.StatusNotFound, dtos.ErrorDto{
+			Message:          fmt.Sprintf("Article %v not found!", id),
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
+		return
+	}
+	article := repository.GetArticle(uint(id))
 
-	c.JSON(http.StatusOK, "articleDtos")
+	// 获得patchJson
+	patchJson, getRawDataErr := c.GetRawData()
+	if getRawDataErr != nil {
+		c.JSON(http.StatusBadRequest, dtos.ErrorDto{
+			Message:          "Bind Model Error",
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
+		return
+	}
+
+	// 应用patch
+	utils.ApplyJsonPatch(article, patchJson)
+	fmt.Printf("%+v", article)
 }
 
 func DeleteArticle(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "AddBlog"})
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+
+	if !repository.ArticleExists(uint(id)) {
+		c.JSON(http.StatusNotFound, dtos.ErrorDto{
+			Message:          fmt.Sprintf("Article %v not found!", id),
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
+		return
+	}
+
+	repository.DeleteArticle(uint(id))
+	c.Status(http.StatusNoContent)
 }

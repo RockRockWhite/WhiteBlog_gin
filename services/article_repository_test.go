@@ -12,9 +12,9 @@ func TestArticleRepository_AddArticle(t *testing.T) {
 	config.Init("../config/config.yml")
 
 	repository := NewArticleRepository(true)
-	if _, err := repository.AddArticle(&entities.Article{
+	repository.AddArticle(&entities.Article{
 		UserId:  1,
-		Titile:  "测试博文",
+		Title:   "测试博文",
 		Content: "# hello world",
 		Views:   0,
 		Tags: []entities.Tag{{
@@ -23,9 +23,7 @@ func TestArticleRepository_AddArticle(t *testing.T) {
 		}},
 		Comments: nil,
 		Stars:    nil,
-	}); err != nil {
-		t.Fatalf("%v", err)
-	}
+	})
 	repository.CommitChanges()
 }
 
@@ -35,10 +33,8 @@ func TestArticleRepository_GetArticle(t *testing.T) {
 
 	repository := NewArticleRepository(true)
 
-	article, err := repository.GetArticle(1)
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
+	article := repository.GetArticle(1)
+
 	fmt.Printf("%+v", article)
 }
 
@@ -48,10 +44,8 @@ func TestArticleRepository_GetArticles(t *testing.T) {
 
 	repository := NewArticleRepository(true)
 
-	articles, err := repository.GetArticles()
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
+	articles := repository.GetArticles()
+
 	fmt.Printf("%+v", articles)
 }
 
@@ -84,7 +78,7 @@ func TestArticleRepository_GetStars(t *testing.T) {
 	config.Init("../config/config.yml")
 
 	repository := NewArticleRepository(true)
-	stars, _ := repository.GetStars(1)
+	stars := repository.GetStars(1)
 
 	fmt.Printf("%+v", stars)
 }
@@ -125,7 +119,7 @@ func TestArticleRepository_GetTags(t *testing.T) {
 	config.Init("../config/config.yml")
 
 	repository := NewArticleRepository(true)
-	tags, _ := repository.GetTags(1)
+	tags := repository.GetTags(1)
 
 	fmt.Printf("%+v", tags)
 }
@@ -183,7 +177,7 @@ func TestArticleRepository_GetComments(t *testing.T) {
 
 	repository := NewArticleRepository(true)
 
-	comments, _ := repository.GetComments(1)
+	comments := repository.GetComments(1)
 
 	fmt.Printf("%+v", comments)
 }

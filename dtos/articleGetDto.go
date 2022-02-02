@@ -1,4 +1,4 @@
-package Dtos
+package dtos
 
 import (
 	"gin/entities"
@@ -24,7 +24,7 @@ func ParseArticleEntity(article *entities.Article) *ArticleGetDto {
 		Id:        article.ID,
 		CreatedAt: article.CreatedAt,
 		UpdatedAt: article.UpdatedAt,
-		Titile:    article.Titile,
+		Titile:    article.Title,
 		Content:   article.Content,
 		Views:     article.Views,
 		Tags:      nil,

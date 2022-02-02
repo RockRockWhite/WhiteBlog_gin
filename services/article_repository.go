@@ -99,20 +99,33 @@ func (repository *ArticleRepository) AddArticle(article *entities.Article) uint 
 }
 
 // UpdateArticle 更新博文
-func (repository *ArticleRepository) UpdateArticle(article *entities.Article) error {
-	result := repository.db.Save(&article)
-
-	return result.Error
+func (repository *ArticleRepository) UpdateArticle(article *entities.Article) {
+	if result := repository.db.Save(&article); result.Error != nil {
+		panic(fmt.Errorf("failed to update article %+v : %s", article, result.Error))
+	}
 }
 
 // DeleteArticle 删除博文
-func (repository *ArticleRepository) DeleteArticle(id uint) error {
+func (repository *ArticleRepository) DeleteArticle(id uint) {
 	if !repository.ArticleExists(id) {
 		panic(fmt.Errorf("article id %v not exists", id))
 	}
-	result := repository.db.Delete(&entities.Article{}, id)
 
-	return result.Error
+	// 删除各个子成员
+	article := repository.GetArticle(id)
+	for i, _ := range article.Stars {
+		repository.DeleteStar(article.Stars[i].ID)
+	}
+	for i, _ := range article.Tags {
+		repository.DeleteTag(article.Tags[i].ID)
+	}
+	for i, _ := range article.Comments {
+		repository.DeleteComment(article.Comments[i].ID)
+	}
+
+	if result := repository.db.Delete(&entities.Article{}, id); result.Error != nil {
+		panic(fmt.Errorf("failed to delete article id %v : %s", id, result.Error))
+	}
 }
 
 // CommitChanges 提交博文数据库事务修改
@@ -177,15 +190,15 @@ func (repository *ArticleRepository) UpdateStar(star *entities.Star) error {
 }
 
 // DeleteStar 删除一条点赞记录
-func (repository *ArticleRepository) DeleteStar(id uint) error {
+func (repository *ArticleRepository) DeleteStar(id uint) {
 	if !repository.StarExists(id) {
 		panic(fmt.Errorf("star id %v not exists", id))
 	}
 
 	var star entities.Star
-	result := repository.db.Delete(&star, id)
-
-	return result.Error
+	if result := repository.db.Delete(&star, id); result.Error != nil {
+		panic(fmt.Errorf("failed to delete star id %v : %s", id, result.Error))
+	}
 }
 
 // StarExists 判断该点赞是否存在
@@ -247,15 +260,15 @@ func (repository *ArticleRepository) UpdateTag(tag *entities.Tag) error {
 }
 
 // DeleteTag 删除Tag
-func (repository *ArticleRepository) DeleteTag(id uint) error {
+func (repository *ArticleRepository) DeleteTag(id uint) {
 	if !repository.TagExists(id) {
 		panic(fmt.Errorf("tag id %v not exists", id))
 	}
 
 	var tag entities.Tag
-	result := repository.db.Delete(&tag, id)
-
-	return result.Error
+	if result := repository.db.Delete(&tag, id); result.Error != nil {
+		panic(fmt.Errorf("failed to delete tag id %v : %s", id, result.Error))
+	}
 }
 
 // TagExists Tag是否存在
@@ -315,13 +328,15 @@ func (repository *ArticleRepository) UpdateComment(comment *entities.Comment) er
 }
 
 // DeleteComment 删除一条评论
-func (repository *ArticleRepository) DeleteComment(id uint) error {
+func (repository *ArticleRepository) DeleteComment(id uint) {
 	if !repository.CommentExists(id) {
 		panic(fmt.Errorf("comment id %v not exists", id))
 	}
+
 	var comment entities.Comment
-	result := repository.db.Delete(&comment, id)
-	return result.Error
+	if result := repository.db.Delete(&comment, id); result.Error != nil {
+		panic(fmt.Errorf("failed to delete comment id %v : %s", id, result.Error))
+	}
 }
 
 // CommentExists 判断评论否存在

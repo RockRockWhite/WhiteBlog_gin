@@ -6,7 +6,7 @@ import "gorm.io/gorm"
 type Article struct {
 	gorm.Model
 	UserId  uint   // 发布者Id
-	Titile  string // 博文标题
+	Title   string // 博文标题
 	Content string // 博文内容
 	Views   uint   // 博文浏览量
 

@@ -1,4 +1,4 @@
-package Dtos
+package dtos
 
 // ErrorDto CommentGetDto 错误信息Dto
 type ErrorDto struct {

@@ -1,4 +1,4 @@
-package Dtos
+package dtos
 
 import (
 	"gin/entities"
@@ -16,7 +16,7 @@ type ArticleAddDto struct {
 func (dto *ArticleAddDto) ToEntity(userId uint) *entities.Article {
 	entity := entities.Article{
 		UserId:   userId,
-		Titile:   dto.Titile,
+		Title:    dto.Titile,
 		Content:  dto.Content,
 		Views:    0,
 		Tags:     nil,
