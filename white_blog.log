@@ -40,3 +40,5 @@ time="2022-02-06 18:25:27" level=info msg="| [request] | 200 | 27.0062ms |      
 time="2022-02-06 18:26:00" level=info msg="| [service] | ***** Service started ***** |"
 time="2022-02-06 18:26:38" level=info msg="| [request] | 201 | 46.7338ms |             ::1 | POST | /article/ |"
 time="2022-02-06 18:27:35" level=info msg="| [service] | ***** Service started ***** |"
+time="2022-02-06 20:30:04" level=info msg="| [service] | ***** Service started ***** |"
+time="2022-02-06 20:51:11" level=info msg="| [service] | ***** Service started ***** |"

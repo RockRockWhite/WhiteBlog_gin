@@ -24,7 +24,6 @@ func TestArticleRepository_AddArticle(t *testing.T) {
 		Comments: nil,
 		Stars:    nil,
 	})
-	repository.CommitChanges()
 }
 
 func TestArticleRepository_GetArticle(t *testing.T) {
@@ -58,8 +57,6 @@ func TestArticleRepository_AddStar(t *testing.T) {
 	if _, err := repository.AddStar(&entities.Star{UserId: 1, ArticleId: 1}); err != nil {
 		t.Fatalf("%v", err)
 	}
-
-	repository.CommitChanges()
 }
 
 func TestArticleRepository_GetStar(t *testing.T) {
@@ -101,7 +98,6 @@ func TestArticleRepository_AddTag(t *testing.T) {
 
 	repository := NewArticleRepository(true)
 	repository.AddTag(&entities.Tag{ArticleId: 1, Name: "测试Tag"})
-	repository.CommitChanges()
 }
 
 func TestArticleRepository_GetTag(t *testing.T) {
@@ -133,7 +129,6 @@ func TestArticleRepository_UpdateTag(t *testing.T) {
 	tag.Name = "被我修改过了"
 
 	repository.UpdateTag(tag)
-	repository.CommitChanges()
 }
 
 func TestArticleRepository_DeleteTag(t *testing.T) {
@@ -142,7 +137,6 @@ func TestArticleRepository_DeleteTag(t *testing.T) {
 
 	repository := NewArticleRepository(true)
 	repository.DeleteTag(1)
-	repository.CommitChanges()
 }
 
 func TestArticleRepository_AddComment(t *testing.T) {
@@ -156,8 +150,6 @@ func TestArticleRepository_AddComment(t *testing.T) {
 		ArticleId: 1,
 		ParentId:  0,
 	})
-
-	repository.CommitChanges()
 }
 
 func TestArticleRepository_GetComment(t *testing.T) {
@@ -191,7 +183,6 @@ func TestArticleRepository_UpdateComment(t *testing.T) {
 	comment.Content = "这个被我change了"
 
 	repository.UpdateComment(comment)
-	repository.CommitChanges()
 }
 
 func TestArticleRepository_DeleteComment(t *testing.T) {
@@ -200,6 +191,4 @@ func TestArticleRepository_DeleteComment(t *testing.T) {
 
 	repository := NewArticleRepository(true)
 	repository.DeleteComment(1)
-
-	repository.CommitChanges()
 }
