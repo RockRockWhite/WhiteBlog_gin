@@ -56,12 +56,12 @@ func GetArticles(c *gin.Context) {
 	articles := repository.GetArticles()
 
 	// 转换为Dto
-	articleDtos := make([]dtos.ArticleGetDto, len(articles))
+	articleDtos := make([]dtos.ArticleGetDto, 0, len(articles))
 	for _, article := range articles {
 		articleDtos = append(articleDtos, *dtos.ParseArticleEntity(&article))
 	}
 
-	c.JSON(http.StatusOK, articles)
+	c.JSON(http.StatusOK, articleDtos)
 }
 
 func UpdateArticle(c *gin.Context) {
@@ -87,8 +87,14 @@ func UpdateArticle(c *gin.Context) {
 	}
 
 	// 应用patch
-	utils.ApplyJsonPatch(article, patchJson)
-	fmt.Printf("%+v", article)
+	dto := dtos.ArticleUpdateDtoFromEntity(article)
+	utils.ApplyJsonPatch(dto, patchJson)
+	dto.ApplyUpdateToEntity(article)
+
+	// 更新数据库
+	repository.UpdateArticle(article)
+
+	c.Status(http.StatusNoContent)
 }
 
 func DeleteArticle(c *gin.Context) {

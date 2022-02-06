@@ -100,6 +100,20 @@ func (repository *ArticleRepository) AddArticle(article *entities.Article) uint 
 
 // UpdateArticle 更新博文
 func (repository *ArticleRepository) UpdateArticle(article *entities.Article) {
+	// 更新子项
+	for i, _ := range article.Tags {
+		article.Tags[i].ArticleId = article.ID
+		repository.UpdateTag(&article.Tags[i])
+	}
+	for i, _ := range article.Comments {
+		article.Comments[i].ArticleId = article.ID
+		repository.UpdateComment(&article.Comments[i])
+	}
+	for i, _ := range article.Stars {
+		article.Stars[i].ArticleId = article.ID
+		repository.UpdateStar(&article.Stars[i])
+	}
+
 	if result := repository.db.Save(&article); result.Error != nil {
 		panic(fmt.Errorf("failed to update article %+v : %s", article, result.Error))
 	}
@@ -126,11 +140,6 @@ func (repository *ArticleRepository) DeleteArticle(id uint) {
 	if result := repository.db.Delete(&entities.Article{}, id); result.Error != nil {
 		panic(fmt.Errorf("failed to delete article id %v : %s", id, result.Error))
 	}
-}
-
-// CommitChanges 提交博文数据库事务修改
-func (repository *ArticleRepository) CommitChanges() {
-	repository.db.Commit()
 }
 
 // ArticleExists 判断该id是否存在
@@ -179,14 +188,14 @@ func (repository *ArticleRepository) AddStar(star *entities.Star) (uint, error) 
 }
 
 // UpdateStar 更新一条点赞记录
-func (repository *ArticleRepository) UpdateStar(star *entities.Star) error {
+func (repository *ArticleRepository) UpdateStar(star *entities.Star) {
 	if !repository.ArticleExists(star.ArticleId) {
 		panic(fmt.Errorf("article id %v not exists", star.ArticleId))
 	}
 
-	result := repository.db.Save(star)
-
-	return result.Error
+	if result := repository.db.Save(star); result.Error != nil {
+		panic(fmt.Errorf("failed to update star %v : %s", star, result.Error))
+	}
 }
 
 // DeleteStar 删除一条点赞记录
@@ -249,14 +258,14 @@ func (repository *ArticleRepository) AddTag(tag *entities.Tag) uint {
 }
 
 // UpdateTag 更新Tag
-func (repository *ArticleRepository) UpdateTag(tag *entities.Tag) error {
+func (repository *ArticleRepository) UpdateTag(tag *entities.Tag) {
 	if !repository.ArticleExists(tag.ArticleId) {
 		panic(fmt.Errorf("article id %v not exists", tag.ArticleId))
 	}
 
-	result := repository.db.Save(tag)
-
-	return result.Error
+	if result := repository.db.Save(tag); result.Error != nil {
+		panic(fmt.Errorf("failed to update tag %+v : %s", tag, result.Error))
+	}
 }
 
 // DeleteTag 删除Tag
@@ -317,14 +326,14 @@ func (repository *ArticleRepository) AddComment(comment *entities.Comment) (uint
 }
 
 // UpdateComment 更新一条评论
-func (repository *ArticleRepository) UpdateComment(comment *entities.Comment) error {
+func (repository *ArticleRepository) UpdateComment(comment *entities.Comment) {
 	if !repository.ArticleExists(comment.ArticleId) {
 		panic(fmt.Errorf("article id %v not exists", comment.ArticleId))
 	}
 
-	result := repository.db.Save(comment)
-
-	return result.Error
+	if result := repository.db.Save(comment); result.Error != nil {
+		panic(fmt.Errorf("failed to update comment %v : %s", comment, result.Error))
+	}
 }
 
 // DeleteComment 删除一条评论

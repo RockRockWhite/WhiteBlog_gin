@@ -6,7 +6,7 @@ import (
 
 // TagAddDto 创建博文标签Dto
 type TagAddDto struct {
-	Name string // 标签名称
+	Name      string // 标签名称
 }
 
 // ToEntity 转换成Entity
