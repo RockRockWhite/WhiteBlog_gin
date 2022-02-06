@@ -2,6 +2,7 @@ package routers
 
 import (
 	"gin/controllers"
+	"gin/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,6 +11,9 @@ func InitApiRouter() *gin.Engine {
 	controllers.InitArticleController()
 
 	router := gin.Default()
+
+	// 配置中间件
+	router.Use(middlewares.Logger())
 
 	blog := router.Group("/article")
 	{

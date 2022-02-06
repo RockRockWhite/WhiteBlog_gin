@@ -10,5 +10,8 @@ DataBase:
   Password: "white"
   DBName: "white_blog"
 
+Logger:
+  LogFile: "white_blog.log"
+
 Document:
   Url: "https://github.com/RockRockWhite/WebApi"
