@@ -24,5 +24,20 @@ func InitApiRouter() *gin.Engine {
 		blog.PATCH("/:id", controllers.UpdateArticle)
 		blog.DELETE("/:id", controllers.DeleteArticle)
 	}
+
+	user := router.Group("/user")
+	{
+		user.GET("/:id", controllers.GetUser)
+		user.POST("/", controllers.AddUser)
+		user.PUT("/", controllers.PutUser)
+		user.PATCH("/:id", controllers.PatchUser)
+		user.DELETE("/:id", controllers.DeleteUser)
+	}
+
+	token := router.Group("/token")
+	{
+		token.GET("/:id", controllers.GetToken)
+	}
+
 	return router
 }

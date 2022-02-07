@@ -11,11 +11,11 @@ import (
 // JwtAuth JwtToken验证中间件
 func JwtAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.Request.Header.Get("Token")
+		token := c.Request.Header.Get("Authorization")
 		if token == "" {
 			// 没有传token参数
 			c.JSON(http.StatusUnauthorized, dtos.ErrorDto{
-				Message:          "Requires key {Token} in headers",
+				Message:          "Requires key {Authorization} in headers",
 				DocumentationUrl: viper.GetString("Document.Url"),
 			})
 
