@@ -10,7 +10,8 @@ func TestGenerateSalt(t *testing.T) {
 }
 
 func TestEncryptPasswordHash(t *testing.T) {
-	saltHash, salt := EncryptPasswordHash("password")
+	salt := GenerateSalt()
+	saltHash := EncryptPasswordHash("password", salt)
 
 	t.Log(saltHash)
 	t.Log(salt)

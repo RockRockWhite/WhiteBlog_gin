@@ -16,7 +16,8 @@ type UserAddDto struct {
 
 // ToEntity 转换成Entity
 func (dto *UserAddDto) ToEntity() *entities.User {
-	passwordHash, salt := utils.EncryptPasswordHash(dto.Password)
+	salt := utils.GenerateSalt()
+	passwordHash := utils.EncryptPasswordHash(dto.Password, salt)
 
 	return &entities.User{
 		NickName:     dto.NickName,

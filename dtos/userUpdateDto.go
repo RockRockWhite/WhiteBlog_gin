@@ -2,6 +2,7 @@ package dtos
 
 import (
 	"gin/entities"
+	"gin/utils"
 )
 
 // UserUpdateDto 添加用户Dto
@@ -18,7 +19,7 @@ type UserUpdateDto struct {
 func UserUpdateDtoFromEntity(user *entities.User) *UserUpdateDto {
 	return &UserUpdateDto{
 		NickName:  user.NickName,
-		Password:  user.Salt,
+		Password:  "",
 		Email:     user.Email,
 		Telephone: user.Telephone,
 		IsAdmin:   user.IsAdmin,
@@ -29,8 +30,10 @@ func UserUpdateDtoFromEntity(user *entities.User) *UserUpdateDto {
 // ApplyUpdateToEntity 将Update应用到Entity
 func (dto *UserUpdateDto) ApplyUpdateToEntity(entity *entities.User) {
 	entity.NickName = dto.NickName
-	// TODO: 解决修改密码问题
-	entity.PasswordHash = dto.Password
+	// 计算密码盐值
+	if dto.Password != "" {
+		entity.PasswordHash = utils.EncryptPasswordHash(dto.Password, entity.Salt)
+	}
 	entity.Email = dto.Email
 	entity.Telephone = dto.Telephone
 	entity.IsAdmin = dto.IsAdmin

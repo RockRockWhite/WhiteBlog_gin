@@ -34,9 +34,7 @@ func GenerateSalt() string {
 }
 
 // EncryptPasswordHash 为密码生成加盐hash
-func EncryptPasswordHash(password string) (string, string) {
-	salt := GenerateSalt()
-
+func EncryptPasswordHash(password string, salt string) string {
 	// 第一层: MD5加密
 	passwordMd5 := fmt.Sprintf("%x", md5.Sum([]byte(password)))
 	saltMd5 := fmt.Sprintf("%x", md5.Sum([]byte(salt)))
@@ -46,19 +44,10 @@ func EncryptPasswordHash(password string) (string, string) {
 	shaHash.Write([]byte(passwordMd5))
 	shaHash.Write([]byte(saltMd5))
 
-	return fmt.Sprintf("%x", shaHash.Sum(nil)), salt
+	return fmt.Sprintf("%x", shaHash.Sum(nil))
 }
 
 // ValifyPasswordHash 验证密码是否正确
 func ValifyPasswordHash(password string, salt string, passwordHash string) bool {
-	// 第一层: MD5加密
-	passwordMd5 := fmt.Sprintf("%x", md5.Sum([]byte(password)))
-	saltMd5 := fmt.Sprintf("%x", md5.Sum([]byte(salt)))
-
-	// 第二层: SHA256加密
-	shaHash := sha256.New()
-	shaHash.Write([]byte(passwordMd5))
-	shaHash.Write([]byte(saltMd5))
-
-	return fmt.Sprintf("%x", shaHash.Sum(nil)) == passwordHash
+	return EncryptPasswordHash(password, salt) == passwordHash
 }
