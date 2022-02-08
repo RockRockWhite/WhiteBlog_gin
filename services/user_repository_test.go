@@ -22,9 +22,9 @@ func TestUserRepository_AddUser(t *testing.T) {
 	repository := NewUserRepository(true)
 
 	repository.AddUser(&entities.User{
-		NickName: "Rock3",
-		Password: "jksdfjk;sdfjkl;dfjkl;dfkl;",
-		Salt:     "dffsdfasdasdffs",
+		NickName:     "Rock3",
+		PasswordHash: "jksdfjk;sdfjkl;dfjkl;dfkl;",
+		Salt:         "dffsdfasdasdffs",
 	})
 }
 

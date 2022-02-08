@@ -17,7 +17,7 @@ func NewUserRepository(autoMigrate bool) *UserRepository {
 	Host := viper.GetString("DataBase.Host")
 	Port := viper.GetString("DataBase.Port")
 	Username := viper.GetString("DataBase.Username")
-	Password := viper.GetString("DataBase.Password")
+	Password := viper.GetString("DataBase.PasswordHash")
 	DBName := viper.GetString("DataBase.DBName")
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", Username, Password, Host, Port, DBName)

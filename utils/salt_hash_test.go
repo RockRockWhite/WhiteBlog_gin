@@ -9,13 +9,13 @@ func TestGenerateSalt(t *testing.T) {
 	t.Log(salt)
 }
 
-func TestEncryptPassword(t *testing.T) {
-	saltHash, salt := EncryptPassword("password")
+func TestEncryptPasswordHash(t *testing.T) {
+	saltHash, salt := EncryptPasswordHash("password")
 
 	t.Log(saltHash)
 	t.Log(salt)
 }
 
-func TestValifyPassword(t *testing.T) {
-	t.Log(ValifyPassword("password", "d95928e8babe0fb2e3afb9ce70c713a6", "1a5dcdbb0552cf7334ed8b670f433402a6a7d375badbbf949d2637162efb565e"))
+func TestValifyPasswordHash(t *testing.T) {
+	t.Log(ValifyPasswordHash("password", "d95928e8babe0fb2e3afb9ce70c713a6", "1a5dcdbb0552cf7334ed8b670f433402a6a7d375badbbf949d2637162efb565e"))
 }
