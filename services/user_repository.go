@@ -36,18 +36,52 @@ func NewUserRepository(autoMigrate bool) *UserRepository {
 	repository := UserRepository{db}
 	return &repository
 }
-func (repository *UserRepository) AddUser(id uint) *entities.User {
-	return nil
-}
 
+// GetUser 获得用户信息
 func (repository *UserRepository) GetUser(id uint) *entities.User {
-	return nil
+	if !repository.UserExists(id) {
+		panic(fmt.Errorf("user id %v not exists", id))
+	}
+
+	var user entities.User
+	if result := repository.db.First(&user, id); result.Error != nil {
+		panic(fmt.Errorf("failed to get user id: %v", id))
+	}
+
+	return &user
 }
 
-func (repository *UserRepository) UpdateUser(id uint) *entities.User {
-	return nil
+// AddUser 添加用户
+func (repository *UserRepository) AddUser(user *entities.User) uint {
+	if result := repository.db.Create(user); result.Error != nil {
+		panic(fmt.Errorf("failed to add user %+v : %s", user, result.Error))
+	}
+
+	return user.ID
 }
 
-func (repository *UserRepository) DeleteUser(id uint) *entities.User {
-	return nil
+// UpdateUser 更新用户信息
+func (repository *UserRepository) UpdateUser(user *entities.User) {
+	if result := repository.db.Save(user); result.Error != nil {
+		panic(fmt.Errorf("failed to update user %+v : %s", user, result.Error))
+	}
+}
+
+// DeleteUser 删除用户
+func (repository *UserRepository) DeleteUser(id uint) {
+	if !repository.UserExists(id) {
+		panic(fmt.Errorf("user id %v not exists", id))
+	}
+
+	if result := repository.db.Delete(&entities.User{}, id); result.Error != nil {
+		panic(fmt.Errorf("failed to delete user id %v : %s", id, result.Error))
+	}
+}
+
+// UserExists 判断用户是否存在
+func (repository *UserRepository) UserExists(id uint) bool {
+	var user entities.User
+	result := repository.db.First(&user, id)
+
+	return result.RowsAffected >= 1
 }
