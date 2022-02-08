@@ -9,6 +9,7 @@ import (
 func InitApiRouter() *gin.Engine {
 	// 初始化Controllers
 	controllers.InitArticleController()
+	controllers.InitUserController()
 
 	router := gin.Default()
 

@@ -11,13 +11,14 @@ import (
 	"strconv"
 )
 
-var repository *services.ArticleRepository
+var articleRepository *services.ArticleRepository
 
 // InitArticleController 初始化博文Controller
 func InitArticleController() {
-	repository = services.NewArticleRepository(true)
+	articleRepository = services.NewArticleRepository(true)
 }
 
+// AddArticle 添加博文
 func AddArticle(c *gin.Context) {
 	var articleDto dtos.ArticleAddDto
 
@@ -30,16 +31,16 @@ func AddArticle(c *gin.Context) {
 	}
 
 	entity := articleDto.ToEntity(1)
-	repository.AddArticle(entity)
+	articleRepository.AddArticle(entity)
 
 	c.JSON(http.StatusCreated, dtos.ParseArticleEntity(entity))
 }
 
-// GetArticle 添加博文
+// GetArticle 获得博文
 func GetArticle(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 
-	if !repository.ArticleExists(uint(id)) {
+	if !articleRepository.ArticleExists(uint(id)) {
 		c.JSON(http.StatusNotFound, dtos.ErrorDto{
 			Message:          fmt.Sprintf("Article %v not found!", id),
 			DocumentationUrl: viper.GetString("Document.Url"),
@@ -47,13 +48,13 @@ func GetArticle(c *gin.Context) {
 		return
 	}
 
-	article := repository.GetArticle(uint(id))
+	article := articleRepository.GetArticle(uint(id))
 	// 转换为Dto
 	c.JSON(http.StatusOK, dtos.ParseArticleEntity(article))
 }
 
 func GetArticles(c *gin.Context) {
-	articles := repository.GetArticles()
+	articles := articleRepository.GetArticles()
 
 	// 转换为Dto
 	articleDtos := make([]dtos.ArticleGetDto, 0, len(articles))
@@ -67,14 +68,14 @@ func GetArticles(c *gin.Context) {
 func UpdateArticle(c *gin.Context) {
 	// 获得更新id
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-	if !repository.ArticleExists(uint(id)) {
+	if !articleRepository.ArticleExists(uint(id)) {
 		c.JSON(http.StatusNotFound, dtos.ErrorDto{
 			Message:          fmt.Sprintf("Article %v not found!", id),
 			DocumentationUrl: viper.GetString("Document.Url"),
 		})
 		return
 	}
-	article := repository.GetArticle(uint(id))
+	article := articleRepository.GetArticle(uint(id))
 
 	// 获得patchJson
 	patchJson, getRawDataErr := c.GetRawData()
@@ -92,7 +93,7 @@ func UpdateArticle(c *gin.Context) {
 	dto.ApplyUpdateToEntity(article)
 
 	// 更新数据库
-	repository.UpdateArticle(article)
+	articleRepository.UpdateArticle(article)
 
 	c.Status(http.StatusNoContent)
 }
@@ -100,7 +101,7 @@ func UpdateArticle(c *gin.Context) {
 func DeleteArticle(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 
-	if !repository.ArticleExists(uint(id)) {
+	if !articleRepository.ArticleExists(uint(id)) {
 		c.JSON(http.StatusNotFound, dtos.ErrorDto{
 			Message:          fmt.Sprintf("Article %v not found!", id),
 			DocumentationUrl: viper.GetString("Document.Url"),
@@ -108,6 +109,6 @@ func DeleteArticle(c *gin.Context) {
 		return
 	}
 
-	repository.DeleteArticle(uint(id))
+	articleRepository.DeleteArticle(uint(id))
 	c.Status(http.StatusNoContent)
 }
