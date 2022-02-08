@@ -6,9 +6,12 @@ import (
 )
 
 type JwtClaims struct {
-	Username string // 用户名
-	Email    string // 用户邮箱
-
+	Id          string // 用户id
+	NickName    string // 昵称
+	Email       string // 邮箱
+	VerifyState bool   // 邮箱验证状态
+	Telephone   string // 手机号码
+	IsAdmin     bool   // 是否管理员
 	jwt.StandardClaims
 }
 
@@ -28,7 +31,7 @@ func GenerateJwtToken(claims JwtClaims) (string, error) {
 	claims.Issuer = _issuer
 	claims.NotBefore = int64(time.Now().Unix())
 	claims.ExpiresAt = int64(time.Now().AddDate(0, 0, _expireDays).Unix())
-	
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return token.SignedString(_secret)

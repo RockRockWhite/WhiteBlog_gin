@@ -2,16 +2,9 @@ package utils
 
 import (
 	"gin/config"
-	"github.com/golang-jwt/jwt"
 	"github.com/spf13/viper"
 	"testing"
 )
-
-type CustomClaims struct {
-	Name  string
-	Email string
-	jwt.StandardClaims
-}
 
 func TestGenerateJwtToken(t *testing.T) {
 	config.Init("../config/config.yml")
