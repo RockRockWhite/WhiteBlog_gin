@@ -13,7 +13,7 @@ import (
 func JwtAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.Request.Header.Get("Authorization")
-		if token == "" && strings.Fields(token)[0] != "bearer" {
+		if token == "" || strings.Fields(token)[0] != "Bearer" {
 			// 没有传token参数
 			c.JSON(http.StatusUnauthorized, dtos.ErrorDto{
 				Message:          "Requires bearer token in filed {Authorization}.",

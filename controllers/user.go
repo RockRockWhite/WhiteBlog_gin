@@ -30,8 +30,9 @@ func AddUser(c *gin.Context) {
 		return
 	}
 
+	// 保证用户名不重复
 	if userRepository.UsernameExists(userDto.Username) {
-		c.JSON(http.StatusNotFound, dtos.ErrorDto{
+		c.JSON(http.StatusBadRequest, dtos.ErrorDto{
 			Message:          fmt.Sprintf("Username %v exists", userDto.Username),
 			DocumentationUrl: viper.GetString("Document.Url"),
 		})
@@ -74,6 +75,18 @@ func PatchUser(c *gin.Context) {
 	}
 	user := userRepository.GetUser(uint(id))
 
+	// 获得用户信息 判断用户是否对该博文具有修改权
+	// 修改权: 改博文为用户所有 或 该用户是管理员
+	claims := c.MustGet("claims").(*utils.JwtClaims)
+
+	if user.ID != claims.Id && !claims.IsAdmin {
+		c.JSON(http.StatusForbidden, dtos.ErrorDto{
+			Message:          "Permission denied for changing this resource!",
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
+		return
+	}
+
 	// 获得patchJson
 	patchJson, getRawDataErr := c.GetRawData()
 	if getRawDataErr != nil {
@@ -88,6 +101,15 @@ func PatchUser(c *gin.Context) {
 	dto := dtos.UserUpdateDtoFromEntity(user)
 	utils.ApplyJsonPatch(dto, patchJson)
 	dto.ApplyUpdateToEntity(user)
+
+	// 保证用户名不重复
+	if userRepository.UsernameExists(user.Username) {
+		c.JSON(http.StatusBadRequest, dtos.ErrorDto{
+			Message:          fmt.Sprintf("Username %v exists", user.Username),
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
+		return
+	}
 
 	// 更新数据库
 	userRepository.UpdateUser(user)
@@ -107,6 +129,19 @@ func DeleteUser(c *gin.Context) {
 	if !userRepository.UserExists(uint(id)) {
 		c.JSON(http.StatusNotFound, dtos.ErrorDto{
 			Message:          fmt.Sprintf("User id %v not found!", id),
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
+		return
+	}
+
+	user := userRepository.GetUser(uint(id))
+	// 获得用户信息 判断用户是否对该博文具有修改权
+	// 修改权: 改博文为用户所有 或 该用户是管理员
+	claims := c.MustGet("claims").(*utils.JwtClaims)
+
+	if user.ID != claims.Id && !claims.IsAdmin {
+		c.JSON(http.StatusForbidden, dtos.ErrorDto{
+			Message:          "Permission denied for changing this resource!",
 			DocumentationUrl: viper.GetString("Document.Url"),
 		})
 		return
