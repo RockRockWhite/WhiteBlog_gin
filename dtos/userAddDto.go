@@ -7,7 +7,7 @@ import (
 
 // UserAddDto 创建用户Dto
 type UserAddDto struct {
-	NickName  string // 昵称
+	Username  string // 昵称
 	Password  string // 密码
 	Email     string // 邮箱
 	Telephone string // 手机号码
@@ -20,7 +20,7 @@ func (dto *UserAddDto) ToEntity() *entities.User {
 	passwordHash := utils.EncryptPasswordHash(dto.Password, salt)
 
 	return &entities.User{
-		NickName:     dto.NickName,
+		Username:     dto.Username,
 		PasswordHash: passwordHash,
 		Salt:         salt,
 		Email:        dto.Email,

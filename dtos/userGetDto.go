@@ -6,7 +6,7 @@ import (
 
 // UserGetDto 获得用户Dto
 type UserGetDto struct {
-	NickName    string // 昵称
+	Username    string // 昵称
 	Email       string // 邮箱
 	VerifyState bool   // 邮箱验证状态
 	Telephone   string // 手机号码
@@ -17,7 +17,7 @@ type UserGetDto struct {
 // ParseUserEntity 将entity转换为GetDto
 func ParseUserEntity(user *entities.User) *UserGetDto {
 	return &UserGetDto{
-		NickName:    user.NickName,
+		Username:    user.Username,
 		Email:       user.Email,
 		VerifyState: user.VerifyState,
 		Telephone:   user.Telephone,

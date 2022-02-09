@@ -6,7 +6,7 @@ import (
 )
 
 type JwtClaims struct {
-	Id          string // 用户id
+	Id          uint // 用户id
 	NickName    string // 昵称
 	Email       string // 邮箱
 	VerifyState bool   // 邮箱验证状态
@@ -27,7 +27,7 @@ func InitJwt(secret string, issuer string, expireDays int) {
 }
 
 // GenerateJwtToken 生成JwtToken
-func GenerateJwtToken(claims JwtClaims) (string, error) {
+func GenerateJwtToken(claims *JwtClaims) (string, error) {
 	claims.Issuer = _issuer
 	claims.NotBefore = int64(time.Now().Unix())
 	claims.ExpiresAt = int64(time.Now().AddDate(0, 0, _expireDays).Unix())

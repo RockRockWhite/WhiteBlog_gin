@@ -9,8 +9,8 @@ import (
 func TestGenerateJwtToken(t *testing.T) {
 	config.Init("../config/config.yml")
 	InitJwt(viper.GetString("Jwt.Secret"), viper.GetString("Jwt.Issuer"), viper.GetInt("Jwt.ExpireDays"))
-	token, err := GenerateJwtToken(JwtClaims{
-		Username: "Rock",
+	token, err := GenerateJwtToken(&JwtClaims{
+		NickName: "Rock",
 		Email:    "Rock@qq.com",
 	})
 

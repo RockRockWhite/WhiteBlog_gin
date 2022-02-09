@@ -30,6 +30,14 @@ func AddUser(c *gin.Context) {
 		return
 	}
 
+	if userRepository.UsernameExists(userDto.Username) {
+		c.JSON(http.StatusNotFound, dtos.ErrorDto{
+			Message:          fmt.Sprintf("Username %v exists", userDto.Username),
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
+		return
+	}
+
 	entity := userDto.ToEntity()
 	userRepository.AddUser(entity)
 

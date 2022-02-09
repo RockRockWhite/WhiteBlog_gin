@@ -22,7 +22,7 @@ func TestUserRepository_AddUser(t *testing.T) {
 	repository := NewUserRepository(true)
 
 	repository.AddUser(&entities.User{
-		NickName:     "Rock3",
+		Username:     "Rock3",
 		PasswordHash: "jksdfjk;sdfjkl;dfjkl;dfkl;",
 		Salt:         "dffsdfasdasdffs",
 	})
@@ -44,7 +44,7 @@ func TestUserRepository_UpdateUser(t *testing.T) {
 
 	// 修改用户信息
 	user := repository.GetUser(1)
-	user.NickName = "被我修改过了"
+	user.Username = "被我修改过了"
 	repository.UpdateUser(user)
 
 	user = repository.GetUser(1)
@@ -62,4 +62,21 @@ func TestUserRepository_DeleteUser(t *testing.T) {
 	if repository.UserExists(1) {
 		t.Failed()
 	}
+}
+
+func TestUserRepository_UserNickNameExists(t *testing.T) {
+	// 初始化配置文件
+	config.Init("../config/config.yml")
+	repository := NewUserRepository(true)
+
+	t.Log(repository.UsernameExists("测试昵称6"))
+}
+
+func TestUserRepository_GetUserByNickName(t *testing.T) {
+	// 初始化配置文件
+	config.Init("../config/config.yml")
+	repository := NewUserRepository(true)
+
+	user := repository.GetUserByNickName("测试昵称6")
+	t.Log(user)
 }

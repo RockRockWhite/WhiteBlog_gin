@@ -37,7 +37,7 @@ func InitApiRouter() *gin.Engine {
 
 	token := router.Group("/token")
 	{
-		token.GET("/:id", controllers.GetToken)
+		token.POST("", controllers.CreateToken)
 	}
 
 	return router

@@ -8,7 +8,7 @@ import (
 type User struct {
 	gorm.Model
 
-	NickName     string // 昵称
+	Username     string `gorm:"unique"` // 昵称 需要保证唯一
 	PasswordHash string // 密码
 	Salt         string // 密码盐值
 	Email        string `gorm:"default:null"` // 邮箱

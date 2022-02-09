@@ -85,3 +85,26 @@ func (repository *UserRepository) UserExists(id uint) bool {
 
 	return result.RowsAffected >= 1
 }
+
+// GetUserByNickName 通过昵称获得用户信息
+func (repository *UserRepository) GetUserByNickName(username string) *entities.User {
+
+	if !repository.UsernameExists(username) {
+		panic(fmt.Errorf("user nick name %v not exists", username))
+	}
+
+	var user entities.User
+	if result := repository.db.Where(&entities.User{Username: username}).First(&user); result.Error != nil {
+		panic(fmt.Errorf("failed to get user username: %v", username))
+	}
+
+	return &user
+}
+
+// UsernameExists 判断用户昵称是否存在
+func (repository *UserRepository) UsernameExists(username string) bool {
+	var user entities.User
+	result := repository.db.Where(&entities.User{Username: username}).First(&user)
+
+	return result.RowsAffected >= 1
+}
