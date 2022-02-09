@@ -6,7 +6,7 @@ import (
 )
 
 type JwtClaims struct {
-	Id          uint // 用户id
+	Id          uint   // 用户id
 	NickName    string // 昵称
 	Email       string // 邮箱
 	VerifyState bool   // 邮箱验证状态
@@ -42,6 +42,10 @@ func ParseJwtToken(tokenString string) (*JwtClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return _secret, nil
 	})
+
+	if err != nil {
+		return nil, err
+	}
 
 	if claims, ok := token.Claims.(*JwtClaims); ok && token.Valid {
 		return claims, nil

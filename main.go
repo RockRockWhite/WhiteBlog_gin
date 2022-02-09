@@ -16,6 +16,8 @@ func main() {
 	utils.InitLogger(viper.GetString("Logger.LogFile"), logrus.DebugLevel, "2006-01-02 15:04:05")
 	utils.Logger().Infof("| [service] | ***** Service started ***** |")
 	defer utils.Logger().Infof("| [service] | ***** Service stoped ***** |")
+	// 初始化Utils
+	utils.InitJwt(viper.GetString("Jwt.Secret"), viper.GetString("Jwt.Issuer"), viper.GetInt("Jwt.ExpireDays"))
 
 	// 初始化并运行路由
 	router := routers.InitApiRouter()

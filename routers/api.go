@@ -1,9 +1,9 @@
 package routers
 
 import (
-	"gin/controllers"
-	"gin/middlewares"
-	"github.com/gin-gonic/gin"
+    "gin/controllers"
+    "gin/middlewares"
+    "github.com/gin-gonic/gin"
 )
 
 func InitApiRouter() *gin.Engine {
@@ -20,10 +20,10 @@ func InitApiRouter() *gin.Engine {
 	{
 		blog.GET("/:id", controllers.GetArticle)
 		blog.GET("/", controllers.GetArticles)
-		blog.POST("/", controllers.AddArticle)
-		blog.PUT("/", controllers.UpdateArticle)
-		blog.PATCH("/:id", controllers.UpdateArticle)
-		blog.DELETE("/:id", controllers.DeleteArticle)
+		blog.POST("/", middlewares.JwtAuth(), controllers.AddArticle)
+		blog.PUT("/", middlewares.JwtAuth(), controllers.UpdateArticle)
+		blog.PATCH("/:id", middlewares.JwtAuth(), controllers.UpdateArticle)
+		blog.DELETE("/:id", middlewares.JwtAuth(), controllers.DeleteArticle)
 	}
 
 	user := router.Group("/user")
