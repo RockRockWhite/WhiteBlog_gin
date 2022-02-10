@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"gin/dtos"
+	"gin/entities"
 	"gin/services"
 	"gin/utils"
 	"github.com/gin-gonic/gin"
@@ -119,7 +120,57 @@ func PatchUser(c *gin.Context) {
 
 // PutUser 替换用户
 func PutUser(c *gin.Context) {
-	// TODO: 待完成
+	var updateDto dtos.UserUpdateDto
+
+	if err := c.ShouldBind(&updateDto); err != nil {
+		c.JSON(http.StatusBadRequest, dtos.ErrorDto{
+			Message:          "Bind Model Error",
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
+		return
+	}
+
+	// 保证用户名不重复
+	if userRepository.UsernameExists(updateDto.Username) {
+		c.JSON(http.StatusBadRequest, dtos.ErrorDto{
+			Message:          fmt.Sprintf("Username %v exists", updateDto.Username),
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
+		return
+	}
+
+	// 获得更新id
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+
+	// 获得用户信息
+	claims := c.MustGet("claims").(*utils.JwtClaims)
+
+	// 处理用户不存在
+	if !userRepository.UserExists(uint(id)) {
+		entity := entities.User{}
+		entity.ID = uint(id)
+		updateDto.ApplyUpdateToEntity(&entity)
+		userRepository.AddUser(&entity)
+
+		c.JSON(http.StatusCreated, dtos.ParseUserEntity(&entity))
+		return
+	}
+
+	// 处理用户存在
+	entity := userRepository.GetUser(uint(id))
+	// 判断是否有修改权
+	if entity.ID != claims.Id && !claims.IsAdmin {
+		c.JSON(http.StatusForbidden, dtos.ErrorDto{
+			Message:          "Permission denied for changing this resource!",
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
+		return
+	}
+
+	updateDto.ApplyUpdateToEntity(entity)
+	userRepository.UpdateUser(entity)
+
+	c.Status(http.StatusNoContent)
 }
 
 // DeleteUser 删除用户
