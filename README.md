@@ -4,6 +4,7 @@
 - [x] /User 增删改查
 - [x] /Article 增删改查
 - [x] /Token 派发jwtToken
+- [x] 密码加盐哈希入库
 - [x] 用JwtToken保护接口
 - [x] HttpPatch使用JsonPatch
 
