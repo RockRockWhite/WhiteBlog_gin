@@ -21,8 +21,8 @@ func InitApiRouter() *gin.Engine {
 		blog.GET("/:id", controllers.GetArticle)
 		blog.GET("/", controllers.GetArticles)
 		blog.POST("/", middlewares.JwtAuth(), controllers.AddArticle)
-		blog.PUT("/", middlewares.JwtAuth(), controllers.UpdateArticle)
-		blog.PATCH("/:id", middlewares.JwtAuth(), controllers.UpdateArticle)
+		blog.PUT("/:id", middlewares.JwtAuth(), controllers.PutArticle)
+		blog.PATCH("/:id", middlewares.JwtAuth(), controllers.PatchArticle)
 		blog.DELETE("/:id", middlewares.JwtAuth(), controllers.DeleteArticle)
 	}
 
@@ -30,7 +30,7 @@ func InitApiRouter() *gin.Engine {
 	{
 		user.GET("/:id", controllers.GetUser)
 		user.POST("/", controllers.AddUser)
-		user.PUT("/", middlewares.JwtAuth(), controllers.PutUser)
+		user.PUT("/:id", middlewares.JwtAuth(), controllers.PutUser)
 		user.PATCH("/:id", middlewares.JwtAuth(), controllers.PatchUser)
 		user.DELETE("/:id", middlewares.JwtAuth(), controllers.DeleteUser)
 	}
