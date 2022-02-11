@@ -67,9 +67,9 @@ func (repository *ArticleRepository) GetArticle(id uint) *entities.Article {
 	return &article
 }
 
-func (repository *ArticleRepository) GetArticles() []entities.Article {
+func (repository *ArticleRepository) GetArticles(limit int, offset int) []entities.Article {
 	var articles []entities.Article
-	if result := repository.db.Find(&articles); result.Error != nil {
+	if result := repository.db.Limit(limit).Offset(offset).Find(&articles); result.Error != nil {
 		panic(fmt.Errorf("failed to get articles: %s", result.Error))
 	}
 

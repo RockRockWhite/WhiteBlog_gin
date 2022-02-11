@@ -59,7 +59,25 @@ func GetArticle(c *gin.Context) {
 
 // GetArticles 批量获得博文
 func GetArticles(c *gin.Context) {
-	articles := articleRepository.GetArticles()
+	// 获得page limit
+	page, pageQueryErr := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if pageQueryErr != nil {
+		c.JSON(http.StatusBadRequest, dtos.ErrorDto{
+			Message:          "Incorrect query field page",
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
+		return
+	}
+	limit, limitQueryErr := strconv.Atoi(c.DefaultQuery("limit", "20"))
+	if limitQueryErr != nil {
+		c.JSON(http.StatusBadRequest, dtos.ErrorDto{
+			Message:          "Incorrect query field limit",
+			DocumentationUrl: viper.GetString("Document.Url"),
+		})
+		return
+	}
+
+	articles := articleRepository.GetArticles(limit, (page-1)*limit)
 
 	// 转换为Dto
 	articleDtos := make([]dtos.ArticleGetDto, 0, len(articles))
