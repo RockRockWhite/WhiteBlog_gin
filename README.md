@@ -7,8 +7,8 @@
 - [x] 密码加盐哈希入库
 - [x] 用JwtToken保护接口
 - [x] HttpPatch使用JsonPatch
+- [x] 文章Get请求过滤
 
-- [ ] 文章Get请求过滤
 - [ ] Api缓存处理
 - [ ] 全文搜索
 - [ ] HATEOAS
