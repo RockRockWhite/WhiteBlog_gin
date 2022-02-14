@@ -9,6 +9,7 @@
 - [x] HttpPatch使用JsonPatch
 - [x] 文章Get请求过滤
 
+- [ ] 输入参数正确性验证
 - [ ] Api缓存处理
 - [ ] 全文搜索
 - [ ] HATEOAS
